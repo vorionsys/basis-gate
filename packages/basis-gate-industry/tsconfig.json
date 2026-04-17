@@ -1,15 +1,9 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "module": "ES2022",
-    "moduleResolution": "Bundler",
     "outDir": "./dist",
-    "rootDir": "./src",
-    "composite": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false
+    "rootDir": "./src"
   },
-  "references": [{ "path": "../basis-gate-spec" }],
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }

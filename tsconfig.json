@@ -15,11 +15,5 @@
     "isolatedModules": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true
-  },
-  "files": [],
-  "references": [
-    { "path": "./packages/basis-gate-spec" },
-    { "path": "./packages/basis-gate-industry" },
-    { "path": "./packages/basis-gate-runtime" }
-  ]
+  }
 }
