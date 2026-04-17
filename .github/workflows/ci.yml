@@ -19,10 +19,26 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
+        run: npm install
 
-      - name: Build all workspaces
-        run: npm run build
+      - name: Verify workspace symlinks
+        run: |
+          echo "--- node_modules/@vorionsys/ ---"
+          ls -la node_modules/@vorionsys/ || echo "(none)"
+          echo "--- spec package.json via symlink ---"
+          cat node_modules/@vorionsys/basis-gate-spec/package.json | head -5 || echo "(missing)"
+
+      - name: Build basis-gate-spec first
+        run: npm run build --workspace=@vorionsys/basis-gate-spec
+
+      - name: Verify spec dist
+        run: ls -la packages/basis-gate-spec/dist/
+
+      - name: Build basis-gate-industry
+        run: npm run build --workspace=@vorionsys/basis-gate-industry
+
+      - name: Build basis-gate-runtime
+        run: npm run build --workspace=@vorionsys/basis-gate-runtime
 
       - name: Smoke test — industry profile loader
         run: |
