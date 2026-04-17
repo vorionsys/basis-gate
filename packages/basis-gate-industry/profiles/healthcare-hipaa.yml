@@ -1,0 +1,108 @@
+# SPDX-License-Identifier: Apache-2.0
+# BASIS Gate industry profile — United States healthcare (HIPAA)
+#
+# This profile encodes a good-faith reading of layered obligations faced by
+# AI agents operating in United States healthcare contexts governed by the
+# Health Insurance Portability and Accountability Act (HIPAA) and related
+# regulations.
+#
+# Publishing this profile is not a legal opinion. Operators remain
+# responsible for their own compliance posture and should consult qualified
+# counsel. Covered entities and business associates should verify that
+# their BASIS Gate deployment integrates with their broader HIPAA
+# Security Rule controls.
+
+id: "@basis/industry/healthcare-hipaa"
+version: "0.1.0"
+description: >
+  United States healthcare profile for HIPAA-covered entities and business
+  associates. Forces PII and PHI redaction to run synchronously at READ
+  risk level and above, requires human review for any action that may
+  disclose, modify, or create PHI at HIGH risk or above, and forbids
+  deferred execution of any layer that could allow PHI to leave the
+  runtime's trust boundary before evidence is captured.
+
+jurisdiction:
+  - "US"
+
+minimum_preset: "strict"
+
+required_layers:
+  - "@basis/identity"
+  - "@basis/tier-check"
+  - "@basis/policy-match"
+  - "@basis/rate-limit"
+  - "@basis/content-safety-in"
+  - "@basis/content-safety-out"
+  - "@basis/pii-redact"
+  - "@basis/tool-validate"
+  - "@basis/human-review"
+  - "@basis/proof-chain-tip"
+  - "@basis/audit-log"
+  - "@basis/telemetry"
+
+required_blocking:
+  "@basis/identity": "READ"
+  "@basis/tier-check": "READ"
+  "@basis/policy-match": "READ"
+  "@basis/rate-limit": "LOW"
+  "@basis/content-safety-in": "READ"
+  "@basis/content-safety-out": "READ"
+  "@basis/pii-redact": "READ"
+  "@basis/tool-validate": "LOW"
+  "@basis/human-review": "HIGH"
+  "@basis/proof-chain-tip": "READ"
+
+prohibited_deferred:
+  - "@basis/identity"
+  - "@basis/tier-check"
+  - "@basis/policy-match"
+  - "@basis/content-safety-in"
+  - "@basis/content-safety-out"
+  - "@basis/pii-redact"
+  - "@basis/tool-validate"
+  - "@basis/proof-chain-tip"
+
+action_class_rules:
+  irreversible-real-world:
+    min_execution_mode: "block"
+    required_layers:
+      - "@basis/human-review"
+      - "@basis/pii-redact"
+  external-recipient:
+    min_execution_mode: "block"
+    required_layers:
+      - "@basis/pii-redact"
+      - "@basis/content-safety-out"
+  multi-hop-chain:
+    min_execution_mode: "block"
+
+references:
+  - cite: "HIPAA Privacy Rule, 45 CFR Part 164 Subpart E"
+    note: >
+      Uses and disclosures of protected health information are subject
+      to minimum-necessary standards. Synchronous PII and PHI redaction
+      at READ level reduces the surface on which minimum-necessary is
+      evaluated.
+  - cite: "HIPAA Security Rule, 45 CFR Part 164 Subpart C"
+    note: >
+      Administrative, physical, and technical safeguards include audit
+      controls at 45 CFR § 164.312(b). The proof-chain tip event is a
+      tamper-evident audit record that complements those controls.
+  - cite: "HIPAA Breach Notification Rule, 45 CFR § 164.400 et seq."
+    note: >
+      Synchronous content-safety and PII-redaction evidence reduces the
+      incidence of unauthorized acquisitions of PHI that would require
+      breach notification.
+  - cite: "HITECH Act of 2009 (Pub. L. 111-5, Title XIII)"
+    note: >
+      Enforcement provisions increase the consequences of HIPAA
+      violations. Synchronous preventive layers reduce the probability
+      of the violations in the first place.
+  - cite: "21st Century Cures Act, Information Blocking Rule, 45 CFR Part 171"
+    note: >
+      Information blocking prohibitions apply to actors who unreasonably
+      interfere with access to, exchange of, or use of electronic health
+      information. Operators configuring this profile should ensure
+      required-blocking constraints do not produce blocking behavior
+      that would itself constitute an information-blocking violation.

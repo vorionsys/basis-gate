@@ -1,0 +1,31 @@
+{
+  "name": "@vorionsys/basis-gate-repo",
+  "version": "0.0.0",
+  "description": "BASIS Gate v1 — open specification and reference implementation for composable AI agent governance pipelines. Monorepo root (not published).",
+  "private": true,
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vorionsys/basis-gate.git"
+  },
+  "homepage": "https://github.com/vorionsys/basis-gate#readme",
+  "bugs": {
+    "url": "https://github.com/vorionsys/basis-gate/issues"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "clean": "rimraf packages/*/dist packages/*/tsconfig.tsbuildinfo"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.0",
+    "rimraf": "^6.0.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

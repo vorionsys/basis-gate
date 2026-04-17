@@ -1,0 +1,60 @@
+# SPDX-License-Identifier: Apache-2.0
+# BASIS Gate industry profile — consumer default
+#
+# The baseline profile for consumer and hobbyist applications. It does not
+# encode any specific regulatory regime; it represents a minimum floor of
+# governance that keeps the action observable and attributable without
+# imposing regulated-sector overhead.
+
+id: "@basis/industry/consumer-default"
+version: "0.1.0"
+description: >
+  Baseline profile for consumer and hobbyist AI agent applications. Ensures
+  identity, tier verification, and tamper-evident evidence while allowing
+  most safety and policy layers to run as deferred or inline to preserve
+  user-facing responsiveness.
+
+jurisdiction:
+  - "any"
+
+minimum_preset: "lite"
+
+required_layers:
+  - "@basis/identity"
+  - "@basis/tier-check"
+  - "@basis/proof-chain-tip"
+  - "@basis/audit-log"
+
+required_blocking:
+  "@basis/identity": "READ"
+  "@basis/tier-check": "READ"
+  "@basis/proof-chain-tip": "READ"
+
+prohibited_deferred:
+  - "@basis/identity"
+  - "@basis/tier-check"
+  - "@basis/proof-chain-tip"
+
+action_class_rules:
+  irreversible-real-world:
+    min_execution_mode: "block"
+    required_layers:
+      - "@basis/policy-match"
+      - "@basis/human-review"
+  external-recipient:
+    min_execution_mode: "inline"
+    required_layers:
+      - "@basis/content-safety-out"
+  multi-hop-chain:
+    min_execution_mode: "block"
+
+references:
+  - cite: "BASIS canonical trust specification, packages/basis/src/canonical.ts"
+    note: >
+      Every agent starts at INITIAL_TRUST_SCORE=0 and must be identified and
+      tier-verified before any action. These constraints are canonical,
+      not regulatory.
+  - cite: "RFC 0001 Bot Package Manifest v1"
+    note: >
+      Consumer bots distributed via the BASIS bot-package format include a
+      signed manifest that declares the agent's identity and declared tier.

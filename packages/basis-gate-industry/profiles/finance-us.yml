@@ -1,0 +1,113 @@
+# SPDX-License-Identifier: Apache-2.0
+# BASIS Gate industry profile — United States financial services
+#
+# This profile encodes a good-faith reading of layered obligations faced by
+# AI agents operating in United States financial services contexts,
+# including broker-dealer, investment advisor, and consumer lending work.
+#
+# Publishing this profile is not a legal opinion. Operators remain
+# responsible for their own compliance posture and should consult qualified
+# counsel before relying on this profile for regulated activity.
+
+id: "@basis/industry/finance-us"
+version: "0.1.0"
+description: >
+  United States financial services profile. Applies to AI agents that may
+  touch trade proposals, client account data, lending decisions, or any
+  action with direct monetary effect. Forces preventive layers to run
+  synchronously for MEDIUM risk and above. Forbids deferred execution of
+  identity, policy, content safety, PII redaction, and tool-call validation.
+
+jurisdiction:
+  - "US"
+
+minimum_preset: "strict"
+
+required_layers:
+  - "@basis/identity"
+  - "@basis/tier-check"
+  - "@basis/policy-match"
+  - "@basis/rate-limit"
+  - "@basis/budget"
+  - "@basis/content-safety-in"
+  - "@basis/content-safety-out"
+  - "@basis/jailbreak-detect"
+  - "@basis/pii-redact"
+  - "@basis/tool-validate"
+  - "@basis/human-review"
+  - "@basis/proof-chain-tip"
+  - "@basis/audit-log"
+  - "@basis/telemetry"
+
+required_blocking:
+  "@basis/identity": "READ"
+  "@basis/tier-check": "READ"
+  "@basis/policy-match": "LOW"
+  "@basis/rate-limit": "LOW"
+  "@basis/budget": "LOW"
+  "@basis/content-safety-in": "MEDIUM"
+  "@basis/content-safety-out": "MEDIUM"
+  "@basis/jailbreak-detect": "MEDIUM"
+  "@basis/pii-redact": "MEDIUM"
+  "@basis/tool-validate": "LOW"
+  "@basis/human-review": "HIGH"
+  "@basis/proof-chain-tip": "READ"
+
+prohibited_deferred:
+  - "@basis/identity"
+  - "@basis/tier-check"
+  - "@basis/policy-match"
+  - "@basis/budget"
+  - "@basis/content-safety-in"
+  - "@basis/content-safety-out"
+  - "@basis/jailbreak-detect"
+  - "@basis/pii-redact"
+  - "@basis/tool-validate"
+  - "@basis/proof-chain-tip"
+
+action_class_rules:
+  irreversible-real-world:
+    min_execution_mode: "block"
+    required_layers:
+      - "@basis/human-review"
+      - "@basis/budget"
+      - "@basis/policy-match"
+  external-recipient:
+    min_execution_mode: "block"
+    required_layers:
+      - "@basis/content-safety-out"
+      - "@basis/pii-redact"
+  multi-hop-chain:
+    min_execution_mode: "block"
+
+references:
+  - cite: "SEC Regulation Best Interest (Reg BI), 17 CFR § 240.15l-1"
+    note: >
+      Broker-dealer recommendations to retail customers require a care
+      obligation that includes diligent consideration of alternatives.
+      Deferred content-safety or policy-match layers cannot produce a
+      record of that consideration before the recommendation is issued.
+  - cite: "FINRA Rule 3110 (Supervision)"
+    note: >
+      Member firms must establish and maintain a supervisory system with
+      written procedures reasonably designed to achieve compliance.
+      Synchronous policy-match evidence contributes to that record.
+  - cite: "FINRA Rule 4511 (General Requirements — Books and Records)"
+    note: >
+      Synchronous proof-chain tip commits per BASIS Gate SPEC § 7
+      produce tamper-evident records suitable as a complement to
+      standard books-and-records requirements.
+  - cite: "FTC Safeguards Rule, 16 CFR Part 314"
+    note: >
+      PII redaction layers run synchronously to reduce risk of disclosing
+      customer information in agent outputs.
+  - cite: "OCC Bulletin 2011-12 (Model Risk Management)"
+    note: >
+      Model risk management expectations include ongoing validation.
+      Canary sampling and shadow verification layers may run deferred
+      to contribute to that validation record.
+  - cite: "BSA/AML Program Requirements, 31 CFR § 1020.210"
+    note: >
+      Anti-money-laundering program requirements for covered financial
+      institutions necessitate synchronous policy-match evidence on
+      transactions that may constitute reportable activity.

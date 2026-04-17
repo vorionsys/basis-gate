@@ -1,0 +1,109 @@
+# SPDX-License-Identifier: Apache-2.0
+# BASIS Gate industry profile — legal services (attorney-client privilege)
+#
+# This profile addresses AI agents operating in legal-services contexts
+# where attorney-client privilege, work-product doctrine, or equivalent
+# confidentiality obligations apply. It ensures that any action touching
+# privileged material runs through synchronous preventive layers.
+#
+# This profile is not a legal opinion and does not create an
+# attorney-client relationship. Operators remain responsible for their
+# own professional and regulatory posture.
+
+id: "@basis/industry/legal-privilege"
+version: "0.1.0"
+description: >
+  Legal services profile. Applies to AI agents handling attorney-client
+  privileged communications, work product, or equivalent confidential
+  materials. Forces synchronous execution of PII redaction, content
+  safety on outputs, and tool-call validation. Requires human review
+  for any action that may externally disclose privileged content.
+
+jurisdiction:
+  - "US"
+  - "EU"
+  - "UK"
+  - "CA"
+
+minimum_preset: "strict"
+
+required_layers:
+  - "@basis/identity"
+  - "@basis/tier-check"
+  - "@basis/policy-match"
+  - "@basis/content-safety-in"
+  - "@basis/content-safety-out"
+  - "@basis/pii-redact"
+  - "@basis/tool-validate"
+  - "@basis/human-review"
+  - "@basis/proof-chain-tip"
+  - "@basis/audit-log"
+
+required_blocking:
+  "@basis/identity": "READ"
+  "@basis/tier-check": "READ"
+  "@basis/policy-match": "READ"
+  "@basis/content-safety-in": "LOW"
+  "@basis/content-safety-out": "READ"
+  "@basis/pii-redact": "READ"
+  "@basis/tool-validate": "READ"
+  "@basis/human-review": "HIGH"
+  "@basis/proof-chain-tip": "READ"
+
+prohibited_deferred:
+  - "@basis/identity"
+  - "@basis/tier-check"
+  - "@basis/policy-match"
+  - "@basis/content-safety-out"
+  - "@basis/pii-redact"
+  - "@basis/tool-validate"
+  - "@basis/proof-chain-tip"
+
+action_class_rules:
+  irreversible-real-world:
+    min_execution_mode: "block"
+    required_layers:
+      - "@basis/human-review"
+  external-recipient:
+    min_execution_mode: "block"
+    required_layers:
+      - "@basis/content-safety-out"
+      - "@basis/pii-redact"
+      - "@basis/human-review"
+  multi-hop-chain:
+    min_execution_mode: "block"
+
+references:
+  - cite: "ABA Model Rule of Professional Conduct 1.6 (Confidentiality)"
+    note: >
+      Lawyers must not reveal information relating to representation
+      without informed consent. Synchronous content-safety and PII
+      redaction on outputs reduce inadvertent disclosure.
+  - cite: "ABA Model Rule of Professional Conduct 5.3 (Responsibilities Regarding Nonlawyer Assistance)"
+    note: >
+      Lawyers retain responsibility for the conduct of nonlawyer
+      assistants, which in recent guidance includes AI tools. The
+      human-review layer at HIGH and above provides a supervisory
+      checkpoint aligned with this obligation.
+  - cite: "ABA Formal Opinion 512 (Generative AI Tools), July 2024"
+    note: >
+      The opinion addresses lawyers' obligations under the Model Rules
+      when using generative AI tools, including competence, confidentiality,
+      communication, and supervision. This profile's required-blocking
+      structure supports documented compliance with those obligations.
+  - cite: "EU General Data Protection Regulation (GDPR), Articles 5 and 32"
+    note: >
+      Data protection by design and appropriate technical measures are
+      required for processing personal data. Synchronous PII redaction
+      operates as a technical measure within the runtime trust boundary.
+  - cite: "UK Solicitors Regulation Authority Standards and Regulations, Principle 7"
+    note: >
+      Acting in the best interests of each client includes protecting
+      client confidentiality. Synchronous preventive layers produce
+      records consistent with this duty.
+  - cite: "Federal Rule of Evidence 502 (Attorney-Client Privilege and Work Product)"
+    note: >
+      FRE 502 governs waiver of privilege in federal proceedings.
+      Synchronous content-safety and PII redaction on outputs reduce
+      the probability of inadvertent disclosure that could be treated
+      as waiver.

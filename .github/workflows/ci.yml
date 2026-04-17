@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build all workspaces
+        run: npm run build
+
+      - name: Smoke test — industry profile loader
+        run: |
+          cd packages/basis-gate-industry
+          node -e "import('./dist/index.js').then(async m => { const p = await m.loadBuiltinProfile('@basis/industry/consumer-default'); if (p.required_layers.length !== 4) { throw new Error('consumer-default should have 4 required layers, got ' + p.required_layers.length); } const all = await m.loadAllBuiltinProfiles(); if (all.length !== 4) { throw new Error('expected 4 built-in profiles, got ' + all.length); } console.log('OK — loader works, all 4 profiles load'); })"
+
+      - name: Smoke test — runtime end-to-end
+        run: |
+          cd packages/basis-gate-runtime
+          node -e "
+          import('./dist/index.js').then(async m => {
+            const layers = await import('./dist/layers/index.js');
+            const { randomBytes } = await import('node:crypto');
+            const runtime = await m.GateRuntime.create({
+              posture: { preset: 'standard', industry: '@basis/industry/consumer-default' },
+              signingKeySeed: randomBytes(32),
+              layers: [
+                layers.createIdentityLayer({ knownAgents: new Set(['test-agent']) }),
+                layers.createTierCheckLayer(),
+                layers.createRateLimitLayer({ requestsPerMinute: 60 }),
+                layers.createProofChainTipLayer(),
+              ],
+              getAgentTier: () => 'T3',
+            });
+            const verdict = await runtime.gate({
+              actionId: 'act_smoke_test',
+              agentId: 'test-agent',
+              risk: 'LOW',
+              classes: ['internal-effect'],
+              payload: {},
+              receivedAt: new Date().toISOString(),
+            });
+            if (verdict.verdict !== 'allow') throw new Error('expected allow, got ' + verdict.verdict);
+            console.log('OK — gate accepted action, tip:', verdict.tip.tipHash.slice(0, 16) + '...');
+          }).catch(e => { console.error(e); process.exit(1); });"
