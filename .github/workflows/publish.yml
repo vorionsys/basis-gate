@@ -29,20 +29,38 @@ jobs:
       - name: Publish basis-gate-spec
         run: |
           cd packages/basis-gate-spec
-          npm publish --access public --provenance
+          PKG_NAME=$(node -e "process.stdout.write(require('./package.json').name)")
+          PKG_VERSION=$(node -e "process.stdout.write(require('./package.json').version)")
+          if npm view "$PKG_NAME@$PKG_VERSION" version > /dev/null 2>&1; then
+            echo "::notice::$PKG_NAME@$PKG_VERSION already on npm, skipping"
+          else
+            npm publish --access public --provenance
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish basis-gate-industry
         run: |
           cd packages/basis-gate-industry
-          npm publish --access public --provenance
+          PKG_NAME=$(node -e "process.stdout.write(require('./package.json').name)")
+          PKG_VERSION=$(node -e "process.stdout.write(require('./package.json').version)")
+          if npm view "$PKG_NAME@$PKG_VERSION" version > /dev/null 2>&1; then
+            echo "::notice::$PKG_NAME@$PKG_VERSION already on npm, skipping"
+          else
+            npm publish --access public --provenance
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish basis-gate-runtime
         run: |
           cd packages/basis-gate-runtime
-          npm publish --access public --provenance
+          PKG_NAME=$(node -e "process.stdout.write(require('./package.json').name)")
+          PKG_VERSION=$(node -e "process.stdout.write(require('./package.json').version)")
+          if npm view "$PKG_NAME@$PKG_VERSION" version > /dev/null 2>&1; then
+            echo "::notice::$PKG_NAME@$PKG_VERSION already on npm, skipping"
+          else
+            npm publish --access public --provenance
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
