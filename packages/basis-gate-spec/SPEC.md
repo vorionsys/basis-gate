@@ -497,7 +497,7 @@ This specification uses semver. Compatibility commitments:
 
 ## 12. Acknowledgments and contact
 
-BASIS Gate v1 is a work of Vorion LLC. Comments and counter-proposals are welcome via the repository issue tracker at `https://github.com/voriongit/vorion` under the `packages/basis-gate-spec` directory, or by writing to the editors.
+BASIS Gate v1 is a work of Vorion LLC. Comments and counter-proposals are welcome via this repository's issue tracker at `https://github.com/vorionsys/basis-gate/issues`, or by writing to the editors.
 
 The canonical trust specification referenced throughout is defined in `@vorionsys/basis` at `packages/basis/src/canonical.ts`.
 

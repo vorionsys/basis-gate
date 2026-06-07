@@ -85,7 +85,7 @@ Nothing yet.
 
 ### 2026-04-17
 
-- Initial public repository split from private `voriongit/vorion` monorepo.
+- Initial public repository split from the private Vorion monorepo.
 - Three packages migrated to this focused repo under Vorion LLC's Apache-2.0 license.
 - `v0.1.1` tag marks repo initialization; corresponds to the npm state at that date.
 - Consumers of the BASIS Gate standard (Aurais, AgentAnchor, third parties) pull from npm, not from source.
