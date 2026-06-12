@@ -90,6 +90,40 @@ export function hashExtension(
   return bytesToHex(sha256(material));
 }
 
+/**
+ * Bind a base hash to its event timestamp (schema version 2).
+ *
+ * Returns `H("basis-gate:ts-bind:v2|" || baseHash || "|" || createdAt)` as
+ * hex. Signing this bound digest (rather than the bare base hash) makes the
+ * `createdAt` field tamper-evident: rewriting a stored timestamp invalidates
+ * the signature. The domain-separation prefix prevents cross-protocol reuse
+ * of signatures.
+ */
+export function bindTimestamp(baseHashHex: string, createdAt: string): string {
+  const material = new TextEncoder().encode(
+    `basis-gate:ts-bind:v2|${baseHashHex}|${createdAt}`,
+  );
+  return bytesToHex(sha256(material));
+}
+
+/**
+ * Digest for a deferred-timeout event (schema version 2). Covers every
+ * semantic field including `createdAt`, so a signed timeout event is fully
+ * verifiable from the stored event alone.
+ */
+export function hashTimeout(args: {
+  actionId: string;
+  anchorTip: string;
+  layerId: string;
+  declaredDeadline: string;
+  createdAt: string;
+}): string {
+  const material = new TextEncoder().encode(
+    `basis-gate:deferred-timeout:v2|${args.actionId}|${args.anchorTip}|${args.layerId}|${args.declaredDeadline}|${args.createdAt}`,
+  );
+  return bytesToHex(sha256(material));
+}
+
 export async function signHex(keyPair: KeyPair, hexDigest: string): Promise<string> {
   const msg = hexToBytes(hexDigest);
   const sig = await ed25519.signAsync(msg, keyPair.privateKey);
@@ -114,17 +148,19 @@ export async function buildTipCommitEvent(args: {
   syncEvidence: LayerEvidenceEnvelope[];
   runtimeKey: KeyPair;
 }): Promise<TipCommitEvent> {
+  const createdAt = new Date().toISOString();
   const tipHash = hashTip(args.action, args.priorChainTip, args.syncEvidence);
-  const tipSignature = await signHex(args.runtimeKey, tipHash);
+  const tipSignature = await signHex(args.runtimeKey, bindTimestamp(tipHash, createdAt));
   return {
     kind: "tip-commit",
+    schemaVersion: 2,
     actionId: args.action.actionId,
     priorChainTip: args.priorChainTip,
     tipHash,
     syncEvidence: args.syncEvidence,
     tipSignature,
     signedBy: args.runtimeKey.keyId,
-    createdAt: new Date().toISOString(),
+    createdAt,
   };
 }
 
@@ -137,11 +173,14 @@ export async function buildChainExtensionEvent(args: {
   layerKey: KeyPair;
   runtimeKey: KeyPair;
 }): Promise<ChainExtensionEvent> {
+  const createdAt = new Date().toISOString();
   const digest = hashExtension(args.actionId, args.anchorTip, args.evidence);
-  const layerSignature = await signHex(args.layerKey, digest);
-  const runtimeAttestation = await signHex(args.runtimeKey, digest);
+  const bound = bindTimestamp(digest, createdAt);
+  const layerSignature = await signHex(args.layerKey, bound);
+  const runtimeAttestation = await signHex(args.runtimeKey, bound);
   return {
     kind: "chain-extension",
+    schemaVersion: 2,
     actionId: args.actionId,
     anchorTip: args.anchorTip,
     layerId: args.layerId,
@@ -149,7 +188,9 @@ export async function buildChainExtensionEvent(args: {
     evidence: args.evidence,
     layerSignature,
     runtimeAttestation,
-    createdAt: new Date().toISOString(),
+    layerSignedBy: args.layerKey.keyId,
+    runtimeSignedBy: args.runtimeKey.keyId,
+    createdAt,
   };
 }
 
@@ -160,15 +201,42 @@ export async function buildDeferredTimeoutEvent(args: {
   declaredDeadline: string;
   runtimeKey: KeyPair;
 }): Promise<DeferredTimeoutEvent> {
+  const createdAt = new Date().toISOString();
+  const digest = hashTimeout({
+    actionId: args.actionId,
+    anchorTip: args.anchorTip,
+    layerId: args.layerId,
+    declaredDeadline: args.declaredDeadline,
+    createdAt,
+  });
+  const timeoutSignature = await signHex(args.runtimeKey, digest);
   return {
     kind: "deferred-timeout",
+    schemaVersion: 2,
     actionId: args.actionId,
     anchorTip: args.anchorTip,
     layerId: args.layerId,
     declaredDeadline: args.declaredDeadline,
     signedBy: args.runtimeKey.keyId,
-    createdAt: new Date().toISOString(),
+    timeoutSignature,
+    createdAt,
   };
+}
+
+export function hashPostureLoad(
+  postureId: string,
+  posture: Posture,
+  resolvedPipeline: string[],
+): string {
+  return bytesToHex(
+    sha256(
+      concatBytes(
+        new TextEncoder().encode(postureId),
+        canonicalJsonBytes(posture),
+        canonicalJsonBytes(resolvedPipeline),
+      ),
+    ),
+  );
 }
 
 export async function buildPostureLoadEvent(args: {
@@ -177,24 +245,18 @@ export async function buildPostureLoadEvent(args: {
   resolvedPipeline: string[];
   runtimeKey: KeyPair;
 }): Promise<PostureLoadEvent> {
-  const digest = bytesToHex(
-    sha256(
-      concatBytes(
-        new TextEncoder().encode(args.postureId),
-        canonicalJsonBytes(args.posture),
-        canonicalJsonBytes(args.resolvedPipeline),
-      ),
-    ),
-  );
-  const postureSignature = await signHex(args.runtimeKey, digest);
+  const createdAt = new Date().toISOString();
+  const digest = hashPostureLoad(args.postureId, args.posture, args.resolvedPipeline);
+  const postureSignature = await signHex(args.runtimeKey, bindTimestamp(digest, createdAt));
   return {
     kind: "posture-load",
+    schemaVersion: 2,
     postureId: args.postureId,
     posture: args.posture,
     resolvedPipeline: args.resolvedPipeline,
     postureSignature,
     signedBy: args.runtimeKey.keyId,
-    createdAt: new Date().toISOString(),
+    createdAt,
   };
 }
 

@@ -11,6 +11,7 @@
 import { describe, expect, it } from "vitest";
 import { randomBytes } from "node:crypto";
 import {
+  bindTimestamp,
   buildChainExtensionEvent,
   buildTipCommitEvent,
   bytesToHex,
@@ -149,12 +150,18 @@ describe("tip-commit events", () => {
     });
 
     expect(event.kind).toBe("tip-commit");
+    expect(event.schemaVersion).toBe(2);
     expect(event.actionId).toBe(action.actionId);
     expect(event.signedBy).toBe(runtimeKey.keyId);
-    // Independent verifier path: recompute the hash, check the signature.
+    // Independent verifier path: recompute the hash, check the signature
+    // over the timestamp-bound digest (schema version 2).
     expect(hashTip(action, GENESIS_TIP, evidence)).toBe(event.tipHash);
     await expect(
-      verifyHex(runtimeKey.publicKey, event.tipHash, event.tipSignature),
+      verifyHex(
+        runtimeKey.publicKey,
+        bindTimestamp(event.tipHash, event.createdAt),
+        event.tipSignature,
+      ),
     ).resolves.toBe(true);
   });
 
@@ -195,7 +202,7 @@ describe("chain linkage", () => {
       if (recomputed !== e.tipHash) return { ok: false, failedAt: i };
       const sigOk = await verifyHex(
         runtimeKey.publicKey,
-        e.tipHash,
+        bindTimestamp(e.tipHash, e.createdAt),
         e.tipSignature,
       );
       if (!sigOk) return { ok: false, failedAt: i };
@@ -293,11 +300,14 @@ describe("chain-extension events (deferred layers)", () => {
     });
 
     const digest = hashExtension("act_0001", anchorTip, evidence);
+    const bound = bindTimestamp(digest, event.createdAt);
+    expect(event.layerSignedBy).toBe(layerKey.keyId);
+    expect(event.runtimeSignedBy).toBe(runtimeKey.keyId);
     await expect(
-      verifyHex(layerKey.publicKey, digest, event.layerSignature),
+      verifyHex(layerKey.publicKey, bound, event.layerSignature),
     ).resolves.toBe(true);
     await expect(
-      verifyHex(runtimeKey.publicKey, digest, event.runtimeAttestation),
+      verifyHex(runtimeKey.publicKey, bound, event.runtimeAttestation),
     ).resolves.toBe(true);
   });
 
@@ -319,7 +329,11 @@ describe("chain-extension events (deferred layers)", () => {
     const tampered = { ...evidence, payload: { verdict: "deny" } };
     const tamperedDigest = hashExtension("act_0001", anchorTip, tampered);
     await expect(
-      verifyHex(layerKey.publicKey, tamperedDigest, event.layerSignature),
+      verifyHex(
+        layerKey.publicKey,
+        bindTimestamp(tamperedDigest, event.createdAt),
+        event.layerSignature,
+      ),
     ).resolves.toBe(false);
   });
 });
