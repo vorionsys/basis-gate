@@ -213,6 +213,9 @@ export {
   derivePublicKey,
   hashTip,
   hashExtension,
+  hashTimeout,
+  hashPostureLoad,
+  bindTimestamp,
   signHex,
   verifyHex,
   buildTipCommitEvent,
@@ -224,6 +227,12 @@ export {
   concatBytes,
   type KeyPair,
 } from "./proof-chain.js";
+export {
+  verifyChain,
+  type KeyResolver,
+  type VerifyChainOptions,
+  type VerifyChainResult,
+} from "./verify-chain.js";
 export {
   loadSigningKeySeed,
   decodeSeed,

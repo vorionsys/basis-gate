@@ -275,11 +275,31 @@ export interface IndustryProfile {
 // ---------------------------------------------------------------------------
 
 /**
+ * Proof-chain event schema version.
+ *
+ * - Version 1 (legacy, implied when `schemaVersion` is absent): signatures
+ *   cover only the base hash. `createdAt` timestamps are NOT covered by any
+ *   signature, and deferred-timeout events carry no signature at all.
+ * - Version 2 (current): signatures cover the base hash bound to `createdAt`
+ *   (see runtime `bindTimestamp`), deferred-timeout events are signed, and
+ *   chain-extension events carry the signing key identifiers.
+ */
+export type ProofSchemaVersion = 1 | 2;
+
+/** The schema version emitted by current runtimes. */
+export const PROOF_SCHEMA_VERSION: ProofSchemaVersion = 2;
+
+/**
  * Tip commit event — produced synchronously when `block` and `inline` layers
  * have completed and the action is ready to dispatch.
+ *
+ * At `schemaVersion` 2, `tipSignature` covers the tip hash bound to
+ * `createdAt`, so timestamp rewriting invalidates the signature.
  */
 export interface TipCommitEvent {
   kind: "tip-commit";
+  /** Absent means schema version 1 (legacy, unsigned timestamp). */
+  schemaVersion?: ProofSchemaVersion;
   actionId: string;
   priorChainTip: string;
   tipHash: string;
@@ -292,9 +312,15 @@ export interface TipCommitEvent {
 /**
  * Chain extension event — produced when a deferred layer completes. Each
  * event anchors to the tip hash captured at synchronous commit time.
+ *
+ * At `schemaVersion` 2, both signatures cover the extension hash bound to
+ * `createdAt`, and `layerSignedBy` / `runtimeSignedBy` identify the keys so
+ * a verifier can resolve them without out-of-band knowledge.
  */
 export interface ChainExtensionEvent {
   kind: "chain-extension";
+  /** Absent means schema version 1 (legacy, unsigned timestamp, no key ids). */
+  schemaVersion?: ProofSchemaVersion;
   actionId: string;
   anchorTip: string;
   layerId: string;
@@ -302,28 +328,45 @@ export interface ChainExtensionEvent {
   evidence: LayerEvidenceEnvelope;
   layerSignature: string;
   runtimeAttestation: string;
+  /** Key id of the layer key. REQUIRED at schemaVersion 2. */
+  layerSignedBy?: string;
+  /** Key id of the runtime key. REQUIRED at schemaVersion 2. */
+  runtimeSignedBy?: string;
   createdAt: string;
 }
 
 /**
  * Deferred timeout event — produced when a deferred layer does not complete
  * within its deferral window.
+ *
+ * At `schemaVersion` 2, `timeoutSignature` covers a digest of all event
+ * fields including `createdAt`; version-1 events are unsigned and therefore
+ * forgeable — a strict verifier MUST reject them.
  */
 export interface DeferredTimeoutEvent {
   kind: "deferred-timeout";
+  /** Absent means schema version 1 (legacy, UNSIGNED — forgeable). */
+  schemaVersion?: ProofSchemaVersion;
   actionId: string;
   anchorTip: string;
   layerId: string;
   declaredDeadline: string;
   signedBy: string;
+  /** Runtime signature over the timeout digest. REQUIRED at schemaVersion 2. */
+  timeoutSignature?: string;
   createdAt: string;
 }
 
 /**
  * Posture load event — produced when a runtime loads or reloads its posture.
+ *
+ * At `schemaVersion` 2, `postureSignature` covers the posture digest bound
+ * to `createdAt`.
  */
 export interface PostureLoadEvent {
   kind: "posture-load";
+  /** Absent means schema version 1 (legacy, unsigned timestamp). */
+  schemaVersion?: ProofSchemaVersion;
   postureId: string;
   posture: Posture;
   resolvedPipeline: string[];
