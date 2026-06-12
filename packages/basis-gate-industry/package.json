@@ -47,7 +47,8 @@
     "@vorionsys/basis-gate-spec": "^0.1.0"
   },
   "devDependencies": {
-    "typescript": "^5.5.0"
+    "typescript": "^5.5.0",
+    "vitest": "^4.0.18"
   },
   "homepage": "https://github.com/vorionsys/basis-gate#readme",
   "bugs": {

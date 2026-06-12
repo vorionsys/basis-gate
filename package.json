@@ -1,7 +1,7 @@
 {
   "name": "@vorionsys/basis-gate-repo",
   "version": "0.0.0",
-  "description": "BASIS Gate v1 — open specification and reference implementation for composable AI agent governance pipelines. Monorepo root (not published).",
+  "description": "BASIS Gate v1 \u2014 open specification and reference implementation for composable AI agent governance pipelines. Monorepo root (not published).",
   "private": true,
   "license": "Apache-2.0",
   "repository": {
@@ -16,9 +16,10 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
+    "build": "npm run build -w @vorionsys/basis-gate-spec && npm run build -w @vorionsys/basis-gate-industry && npm run build -w @vorionsys/basis-gate-runtime",
     "test": "npm run test --workspaces --if-present",
-    "clean": "rimraf packages/*/dist packages/*/tsconfig.tsbuildinfo"
+    "clean": "rimraf packages/*/dist packages/*/tsconfig.tsbuildinfo",
+    "pretest": "npm run build"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
