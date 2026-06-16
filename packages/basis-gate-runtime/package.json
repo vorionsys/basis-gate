@@ -1,6 +1,6 @@
 {
   "name": "@vorionsys/basis-gate-runtime",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "type": "module",
   "description": "Reference implementation of BASIS Gate v1. Resolves postures to pipelines, executes layers in block/inline/deferred modes, and produces a two-stage proof chain for every gated action.",
   "license": "Apache-2.0",
