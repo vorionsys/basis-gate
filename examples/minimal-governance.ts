@@ -5,10 +5,13 @@
 // Run an AI-agent action through a signed governance pipeline end to end:
 //   1. happy path  — a known agent's LOW-risk action is ALLOWED; it emits a signed proof-chain tip.
 //   2. blocked path — an UNKNOWN agent's action is DENIED by the identity rule (the refusal is itself signed proof).
-// Mirrors smoke.mjs in vorionsys/basis-gate. Verified against @vorionsys/basis-gate-runtime@0.1.1.
+// Verified end-to-end against @vorionsys/basis-gate-runtime@0.1.1.
 //
 //   npm i @vorionsys/basis-gate-runtime @vorionsys/basis-gate-industry @vorionsys/basis-gate-spec
 //   npx tsx examples/minimal-governance.ts
+//
+// (This file runs as an ES module — see examples/package.json. The runtime and spec
+//  packages are ESM-only, so the example must run as ESM, which also enables top-level await.)
 
 import { randomBytes } from "node:crypto";
 import { GateRuntime, type ProofChainEvent } from "@vorionsys/basis-gate-runtime";
@@ -76,4 +79,6 @@ await runtime.drain();
 
 // 3. Proof: every verdict committed signed proof-chain events.
 console.log(`\n[PROOF] ${events.length} signed proof-chain events emitted; each tip is Ed25519-signed by the runtime key.`);
-console.log("        (Full-chain replay via verifyChain ships in the runtime source; 0.1.1 exposes the signing primitives signHex/verifyHex/hashTip.)");
+console.log("        (Replay the whole chain with the exported verifyChain(events, resolveKey); the runtime also");
+console.log("         exposes the signing primitives signHex/verifyHex/hashTip. A full verify+tamper walk-through");
+console.log("         lives in packages/basis-gate-runtime/tests/verify-chain.test.ts.)");
