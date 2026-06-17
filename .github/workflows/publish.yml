@@ -20,6 +20,9 @@ jobs:
           node-version: '22'
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Upgrade npm (OIDC trusted publishing needs npm >= 11.5)
+        run: npm install -g npm@latest
+
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
@@ -36,8 +39,6 @@ jobs:
           else
             npm publish --access public --provenance
           fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish basis-gate-industry
         run: |
@@ -49,8 +50,6 @@ jobs:
           else
             npm publish --access public --provenance
           fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish basis-gate-runtime
         run: |
@@ -62,5 +61,3 @@ jobs:
           else
             npm publish --access public --provenance
           fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
