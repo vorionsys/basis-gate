@@ -1,6 +1,12 @@
 # BASIS Gate
 
+[![npm — basis-gate-runtime](https://img.shields.io/npm/v/@vorionsys/basis-gate-runtime?label=%40vorionsys%2Fbasis-gate-runtime)](https://www.npmjs.com/package/@vorionsys/basis-gate-runtime)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
+[![CI](https://github.com/vorionsys/basis-gate/actions/workflows/ci.yml/badge.svg)](https://github.com/vorionsys/basis-gate/actions/workflows/ci.yml)
+
 **B**aseline **A**uthority for **S**afe & **I**nteroperable **S**ystems — Gate specification and reference implementation.
+
+> BASIS is to AI-agent governance what OAuth is to delegated authorization — an open standard so an agent trusted by one system can be evaluated by another.
 
 An open specification for governance pipelines that mediate AI agent actions. Compose identity, authorization, content safety, rate limits, policy, audit, and proof-chain signing as ordered layers. Pick strictness per-deployment. Add your own layers. Swap runtime implementations without rewriting agents.
 
@@ -64,6 +70,16 @@ if (verdict.verdict !== "allow") {
 
 // Your agent call runs here. The runtime has already signed a
 // tip commit over the action and scheduled deferred evidence.
+```
+
+### Try it
+
+A complete, runnable version — one allowed action, one blocked action, and the signed proof it emits — lives in [`examples/minimal-governance.ts`](./examples/minimal-governance.ts) (starter/reference use, ~80 lines, uses only the three published packages):
+
+```bash
+git clone https://github.com/vorionsys/basis-gate && cd basis-gate
+npm install && npm run build
+npx tsx examples/minimal-governance.ts
 ```
 
 ## Spec

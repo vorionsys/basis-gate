@@ -1,0 +1,5 @@
+{
+  "private": true,
+  "type": "module",
+  "//": "Marks examples as ES modules. The runtime + spec packages are ESM-only, so examples must run as ESM (this also enables top-level await under `npx tsx`)."
+}
