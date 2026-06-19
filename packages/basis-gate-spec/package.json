@@ -1,6 +1,6 @@
 {
   "name": "@vorionsys/basis-gate-spec",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "BASIS Gate v1 \u2014 open specification for composable, adaptive AI agent governance pipelines. Defines the layer interface, execution modes, and two-stage proof-chain commit protocol.",
   "license": "Apache-2.0",
