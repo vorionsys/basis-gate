@@ -40,7 +40,11 @@ export function createTierCheckLayer(): GateLayer {
     async run(ctx: GateContext, action: AgentAction): Promise<LayerDecision> {
       const required = MIN_TIER_FOR_RISK[action.risk];
       const requiredRank = TIER_RANK.indexOf(required);
-      const agentRank = TIER_RANK.indexOf(ctx.agentTier);
+      // Gate on the FAIL-CLOSED effective tier (min of claimed, recomputed, and
+      // the observation ceiling — computed by the executor), NOT the raw claimed
+      // tier. Falls back to the claimed tier when no verification context exists.
+      const boundTier = ctx.effectiveTier ?? ctx.agentTier;
+      const agentRank = TIER_RANK.indexOf(boundTier);
       const ok = agentRank >= requiredRank;
       const envelope = {
         layerId: "@basis/tier-check",
@@ -50,16 +54,19 @@ export function createTierCheckLayer(): GateLayer {
         executionMode: "block" as const,
         layerMode: "enforce" as const,
         payload: {
-          agentTier: ctx.agentTier,
+          claimedTier: ctx.agentTier,
+          effectiveTier: boundTier,
+          observationTier: ctx.observationTier,
           required,
           risk: action.risk,
         },
       };
       if (!ok) {
+        const capped = boundTier !== ctx.agentTier;
         return {
           verdict: "escalate",
           to: "higher-tier",
-          reason: `action requires ${required}; agent is ${ctx.agentTier}`,
+          reason: `action requires ${required}; agent effective tier is ${boundTier}${capped ? ` (claimed ${ctx.agentTier}, capped by recomputation/observation)` : ""}`,
           evidence: envelope,
         };
       }

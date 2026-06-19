@@ -19,6 +19,7 @@ import type {
   GateContext,
   GateLayer,
   LayerEvidenceEnvelope,
+  ObservationTier,
   RiskLevel,
   TrustTier,
 } from "@vorionsys/basis-gate-spec";
@@ -28,6 +29,32 @@ import {
   type KeyPair,
 } from "./proof-chain.js";
 import { DeferredQueue } from "./deferred-queue.js";
+// Canonical, no-drift trust primitives (derived from basis-spec). Used to floor
+// the claimed tier so the kernel stops trusting it verbatim.
+import { toT, OBS_MAXTIER } from "@vorionsys/basis-scorer";
+
+/**
+ * Fail-closed effective tier for the kernel:
+ *   effectiveTier = min(claimed, recomputed?, observation ceiling?)
+ * Backward-compatible — with NO verification context the result equals the
+ * claimed tier (legacy callers are unaffected). When a recomputed tier or an
+ * observation tier is supplied, the effective tier binds to the LOWER, so the
+ * gate stops trusting a claimed tier above what was recomputed or is observable.
+ * An unknown observation tier fails closed to T0.
+ */
+function computeEffectiveTier(
+  claimed: TrustTier,
+  recomputed: TrustTier | undefined,
+  observation: ObservationTier | undefined,
+): TrustTier {
+  let idx: number = toT(claimed);
+  if (recomputed !== undefined) idx = Math.min(idx, toT(recomputed));
+  if (observation !== undefined) {
+    const cap = OBS_MAXTIER[observation as keyof typeof OBS_MAXTIER];
+    idx = cap === undefined ? 0 : Math.min(idx, cap); // unknown box → fail closed
+  }
+  return `T${idx}` as TrustTier;
+}
 
 export type SyncVerdict =
   | { verdict: "allow"; tip: import("@vorionsys/basis-gate-spec").TipCommitEvent }
@@ -51,8 +78,20 @@ export interface ExecutorOptions {
   deferredQueue: DeferredQueue;
   /** Look up the current chain tip (e.g. from storage). Defaults to genesis. */
   getPriorChainTip?: () => string | Promise<string>;
-  /** Look up the agent's current trust tier. */
+  /** Look up the agent's CLAIMED trust tier. */
   getAgentTier: (agentId: string) => TrustTier | Promise<TrustTier>;
+  /**
+   * Optional: the agent's observation tier (BLACK_BOX … VERIFIED_BOX). When
+   * supplied, the kernel caps the effective tier at its ceiling (fail-closed on
+   * an unknown box). Omit for legacy behaviour (gate on the claimed tier).
+   */
+  getObservationTier?: (agentId: string) => ObservationTier | undefined | Promise<ObservationTier | undefined>;
+  /**
+   * Optional: an INDEPENDENTLY recomputed tier (e.g. derived from the proof
+   * chain). When supplied, the effective tier binds to min(claimed, recomputed)
+   * — the gate stops trusting the claim verbatim.
+   */
+  getRecomputedTier?: (agentId: string, claimed: TrustTier) => TrustTier | undefined | Promise<TrustTier | undefined>;
 }
 
 export class Executor {
@@ -68,12 +107,18 @@ export class Executor {
   }): Promise<SyncVerdict> {
     const { action, pipeline } = args;
     const tier = await this.opts.getAgentTier(action.agentId);
+    const observationTier = await this.opts.getObservationTier?.(action.agentId);
+    const recomputedTier = await this.opts.getRecomputedTier?.(action.agentId, tier);
     const priorChainTip =
       (await this.opts.getPriorChainTip?.()) ?? GENESIS_TIP;
 
     const ctx: GateContext = {
       action,
-      agentTier: tier,
+      agentTier: tier, // claimed — retained for the audit trail
+      recomputedTier,
+      observationTier,
+      // Layers gate on this fail-closed minimum, NOT on the claimed tier.
+      effectiveTier: computeEffectiveTier(tier, recomputedTier, observationTier),
       priorChainTip,
       postureId: pipeline.postureId,
       accumulatedEvidence: [],

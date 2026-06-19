@@ -22,6 +22,7 @@ import type {
   ProofChainEvent,
   RiskLevel,
   TipCommitEvent,
+  ObservationTier,
   TrustTier,
 } from "@vorionsys/basis-gate-spec";
 import { loadBuiltinProfile, BUILTIN_PROFILE_IDS } from "@vorionsys/basis-gate-industry";
@@ -53,8 +54,12 @@ export interface GateRuntimeOptions {
   deferralWindowMs?: number;
   /** Emit every proof-chain event. Replace with durable sink in production. */
   emit?: (event: ProofChainEvent) => void | Promise<void>;
-  /** Look up an agent's current trust tier. */
+  /** Look up an agent's CLAIMED trust tier. */
   getAgentTier: (agentId: string) => TrustTier | Promise<TrustTier>;
+  /** Optional: the agent's observation tier — caps the effective tier (fail-closed on an unknown box). */
+  getObservationTier?: (agentId: string) => ObservationTier | undefined | Promise<ObservationTier | undefined>;
+  /** Optional: an independently recomputed tier — binds the effective tier to min(claimed, recomputed). */
+  getRecomputedTier?: (agentId: string, claimed: TrustTier) => TrustTier | undefined | Promise<TrustTier | undefined>;
   /** Read the current chain tip (defaults to genesis if not supplied). */
   getPriorChainTip?: () => string | Promise<string>;
 }
@@ -139,6 +144,8 @@ export class GateRuntime {
       runtimeKey,
       deferredQueue,
       getAgentTier: options.getAgentTier,
+      getObservationTier: options.getObservationTier,
+      getRecomputedTier: options.getRecomputedTier,
       getPriorChainTip: options.getPriorChainTip,
     });
 
