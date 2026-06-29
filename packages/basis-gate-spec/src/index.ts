@@ -94,13 +94,39 @@ export type ActionClass =
   | "multi-hop-chain";
 
 /**
+ * Observation tier — how observable the agent's execution is. Caps the effective
+ * trust tier at its ceiling (an I/O-only BLACK_BOX agent cannot act as a high
+ * tier no matter what it claims). Names match the canonical BASIS spec.
+ */
+export type ObservationTier =
+  | "BLACK_BOX"
+  | "GRAY_BOX"
+  | "WHITE_BOX"
+  | "ATTESTED_BOX"
+  | "VERIFIED_BOX";
+
+/**
  * Context passed to each layer's `run` function.
  */
 export interface GateContext {
   /** The action under evaluation. */
   action: AgentAction;
-  /** The evaluating agent's current tier, per the canonical trust specification. */
+  /** The evaluating agent's CLAIMED tier (as asserted to the gate). */
   agentTier: TrustTier;
+  /**
+   * The tier the relying party INDEPENDENTLY recomputed (e.g. from the proof
+   * chain), if supplied. Optional and backward-compatible.
+   */
+  recomputedTier?: TrustTier;
+  /** The agent's observation tier, if supplied — caps the effective tier. */
+  observationTier?: ObservationTier;
+  /**
+   * The FAIL-CLOSED effective tier = min(claimed, recomputed, observation
+   * ceiling), computed by @vorionsys/basis-scorer in the executor. Layers gate
+   * on THIS, not the claimed `agentTier`. Defaults to `agentTier` when no
+   * verification context is supplied (backward-compatible).
+   */
+  effectiveTier?: TrustTier;
   /** The proof-chain tip hash observed when this pipeline began. */
   priorChainTip: string;
   /** Posture identifier in effect for this pipeline. */

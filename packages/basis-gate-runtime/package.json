@@ -44,6 +44,7 @@
   "dependencies": {
     "@vorionsys/basis-gate-spec": "^0.1.0",
     "@vorionsys/basis-gate-industry": "^0.1.1",
+    "@vorionsys/basis-scorer": "^0.1.0",
     "@noble/ed25519": "^2.0.0",
     "@noble/hashes": "^1.4.0"
   },
