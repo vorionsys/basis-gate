@@ -2,10 +2,11 @@
   "name": "@vorionsys/basis-gate-spec",
   "version": "0.1.1",
   "type": "module",
-  "description": "BASIS Gate v1 \u2014 open specification for composable, adaptive AI agent governance pipelines. Defines the layer interface, execution modes, and two-stage proof-chain commit protocol.",
+  "description": "BASIS Gate v1 — open specification for composable, adaptive AI agent governance pipelines. Defines the layer interface, execution modes, and two-stage proof-chain commit protocol.",
   "license": "Apache-2.0",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -17,9 +18,8 @@
   },
   "files": [
     "dist",
-    "SPEC.md",
-    "LICENSE",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsc",
@@ -33,17 +33,17 @@
     "vorion",
     "open-standard"
   ],
-  "author": "Vorion LLC <team@vorion.org>",
+  "author": "Vorion LLC",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vorionsys/basis-gate.git",
+    "url": "git+https://github.com/vorionsys/basis-gate.git",
     "directory": "packages/basis-gate-spec"
   },
   "devDependencies": {
     "typescript": "^5.5.0",
     "vitest": "^4.0.18"
   },
-  "homepage": "https://github.com/vorionsys/basis-gate#readme",
+  "homepage": "https://vorion.org",
   "bugs": {
     "url": "https://github.com/vorionsys/basis-gate/issues"
   }
