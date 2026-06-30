@@ -5,7 +5,8 @@
   "description": "Reference implementation of BASIS Gate v1. Resolves postures to pipelines, executes layers in block/inline/deferred modes, and produces a two-stage proof chain for every gated action.",
   "license": "Apache-2.0",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -21,8 +22,8 @@
   },
   "files": [
     "dist",
-    "LICENSE",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsc",
@@ -35,10 +36,10 @@
     "proof-chain",
     "vorion"
   ],
-  "author": "Vorion LLC <team@vorion.org>",
+  "author": "Vorion LLC",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vorionsys/basis-gate.git",
+    "url": "git+https://github.com/vorionsys/basis-gate.git",
     "directory": "packages/basis-gate-runtime"
   },
   "dependencies": {
@@ -52,7 +53,7 @@
     "typescript": "^5.5.0",
     "vitest": "^4.0.18"
   },
-  "homepage": "https://github.com/vorionsys/basis-gate#readme",
+  "homepage": "https://vorion.org",
   "bugs": {
     "url": "https://github.com/vorionsys/basis-gate/issues"
   }

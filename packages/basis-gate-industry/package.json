@@ -5,7 +5,8 @@
   "description": "Industry profiles for BASIS Gate v1. Named override sets for regulated sectors (finance, healthcare, legal) and a consumer default.",
   "license": "Apache-2.0",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -20,9 +21,8 @@
   },
   "files": [
     "dist",
-    "profiles",
-    "LICENSE",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsc",
@@ -37,10 +37,10 @@
     "legal-privilege",
     "vorion"
   ],
-  "author": "Vorion LLC <team@vorion.org>",
+  "author": "Vorion LLC",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vorionsys/basis-gate.git",
+    "url": "git+https://github.com/vorionsys/basis-gate.git",
     "directory": "packages/basis-gate-industry"
   },
   "dependencies": {
@@ -50,7 +50,7 @@
     "typescript": "^5.5.0",
     "vitest": "^4.0.18"
   },
-  "homepage": "https://github.com/vorionsys/basis-gate#readme",
+  "homepage": "https://vorion.org",
   "bugs": {
     "url": "https://github.com/vorionsys/basis-gate/issues"
   }
