@@ -8,6 +8,8 @@
 
 > BASIS is to AI-agent governance what OAuth is to delegated authorization — an open standard so an agent trusted by one system can be evaluated by another.
 
+> **Relationship to BASIS:** BASIS Gate is a *companion specification under the BASIS umbrella* — it covers pipeline composition and execution, and **consumes** the trust semantics defined by [`@vorionsys/basis-spec`](https://github.com/vorionsys/basis-spec) rather than redefining them. On any trust-semantics question, basis-spec is authoritative.
+
 An open specification for governance pipelines that mediate AI agent actions. Compose identity, authorization, content safety, rate limits, policy, audit, and proof-chain signing as ordered layers. Pick strictness per-deployment. Add your own layers. Swap runtime implementations without rewriting agents.
 
 ## What this repository contains
