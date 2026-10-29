@@ -97,7 +97,7 @@ The full specification lives at [`packages/basis-gate-spec/SPEC.md`](./packages/
 ## Status
 
 - Specification version: `v1.0-draft`
-- Packages on npm: `@vorionsys/basis-gate-spec@0.1.0`, `@vorionsys/basis-gate-industry@0.1.1`, `@vorionsys/basis-gate-runtime@0.1.1`
+- Packages on npm: `@vorionsys/basis-gate-spec@0.1.1`, `@vorionsys/basis-gate-industry@0.1.2`, `@vorionsys/basis-gate-runtime@0.2.0`
 - Reference runtime: complete. Resolver, executor, Ed25519 signing, deferred queue, 5 reference layers.
 - Conformance test suite: planned. Tracked at [issue](https://github.com/vorionsys/basis-gate/issues) — contributions welcome.
 
