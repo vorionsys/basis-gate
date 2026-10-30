@@ -8,14 +8,14 @@ A BASIS Gate posture starts from a preset (`lite`, `standard`, `strict`, `full`)
 
 ## Profiles in this package
 
-| Profile                         | Sector              | Jurisdiction | Status       |
-|---------------------------------|---------------------|--------------|--------------|
-| `consumer-default`              | Consumer            | Any          | v1 draft     |
-| `finance-us`                    | Financial services  | United States| v1 draft     |
-| `healthcare-hipaa`              | Healthcare          | United States| v1 draft     |
-| `legal-privilege`               | Legal services      | US / EU / UK | v1 draft     |
+| Profile                         | Sector              | Jurisdiction | Document version |
+|---------------------------------|---------------------|--------------|------------------|
+| `consumer-default`              | Consumer            | Any          | `0.1.0` draft    |
+| `finance-us`                    | Financial services  | United States| `0.1.0` draft    |
+| `healthcare-hipaa`              | Healthcare          | United States| `0.1.0` draft    |
+| `legal-privilege`               | Legal services      | US / EU / UK | `0.1.0` draft    |
 
-Profiles live as YAML documents in [`profiles/`](./profiles/). The TypeScript loader in [`src/index.ts`](./src/index.ts) validates and returns them as typed `IndustryProfile` objects per the `@vorionsys/basis-gate-spec` specification.
+Human-readable YAML for the same four profiles lives in [`profiles/`](./profiles/). The loader in [`src/index.ts`](./src/index.ts) returns copies of TypeScript constants embedded in that file. It does not parse the YAML at runtime. `validateProfile` checks an already-parsed object against the `@vorionsys/basis-gate-spec` profile shape.
 
 ## How operators use a profile
 
@@ -30,7 +30,7 @@ layers:
       execution: block
 ```
 
-The runtime loads the profile before applying any operator-supplied `layers.add`, `layers.remove`, or `layers.override`. Operator configuration can only add to or extend the profile — never weaken it.
+The runtime resolver loads a built-in profile before applying operator `layers.add`, `layers.remove`, or `layers.override`. Removing a layer listed in that profile's `required_layers`, or setting an execution mode below `required_blocking`, throws. Other layers can be removed. The reference runtime still skips a required layer at execution time when that layer is absent from the registry.
 
 ## What a profile is not
 
@@ -38,7 +38,7 @@ A profile is not a legal compliance certification. Publishing a profile claims t
 
 ## Publishing your own profile
 
-The `@basis/industry/*` namespace is reserved for profiles published by Vorion LLC. Other parties publishing profiles should use a namespace they own (for example, `@acme/industry/fintech-eu-v2`). The profile document format is specified in `@vorionsys/basis-gate-spec` § 8.
+The `@basis/industry/*` namespace is reserved for profiles published by Vorion LLC. Other parties publishing profiles should use a namespace they own (for example, `@acme/industry/fintech-eu-v2`). The profile document format is specified in `@vorionsys/basis-gate-spec` § 8. `GateRuntime.create` accepts only the four built-in ids; any other `posture.industry` throws.
 
 ## License
 
@@ -47,4 +47,4 @@ Apache License, Version 2.0. See [`LICENSE`](./LICENSE).
 ## References
 
 - [`@vorionsys/basis-gate-spec`](../basis-gate-spec) — the underlying specification.
-- [`@vorionsys/basis`](../basis) — canonical BASIS trust parameters referenced by every profile.
+- [`@vorionsys/basis-spec`](https://github.com/vorionsys/basis-spec) — canonical BASIS trust parameters. The file `packages/basis/src/canonical.ts` is in that repository. This repo does not contain `packages/basis`.

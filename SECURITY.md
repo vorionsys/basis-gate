@@ -27,7 +27,7 @@ Out-of-scope:
 - Vulnerabilities in dependencies (report those to the upstream project)
 - Issues in non-reference runtimes or third-party layers — those are the responsibility of their authors
 - Issues that require an attacker to already control the signing key (if the key is compromised, the game is over)
-- Issues in consumers of this library (Aurais, Mission Control, AgentAnchor, etc.) — report those to the respective product teams
+- Issues in other products — report those to that product's maintainers. This repository does not document which external products import these packages.
 
 ## Supported versions
 

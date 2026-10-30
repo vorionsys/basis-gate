@@ -55,7 +55,7 @@ The key words **MUST**, **MUST NOT**, **SHOULD**, **SHOULD NOT**, and **MAY** in
 
 ### 1.3 Relationship to BASIS canonical trust parameters
 
-Trust score ranges, tier definitions, risk-level multipliers, penalty formulas, circuit-breaker thresholds, and recovery parameters are defined in the canonical BASIS trust specification (implemented in `@vorionsys/basis` at `packages/basis/src/canonical.ts`). This specification references those values; it does not redefine them.
+Trust score ranges, tier definitions, risk-level multipliers, penalty formulas, circuit-breaker thresholds, and recovery parameters are defined in the canonical BASIS trust specification, published as [`@vorionsys/basis-spec`](https://github.com/vorionsys/basis-spec) (`packages/basis/src/canonical.ts` in that repository). This repository does not vendor that package. This specification references those values and does not redefine them.
 
 A conformant runtime **MUST NOT** override canonical trust parameters via layer configuration. Operators configure *which layers run* and *in what mode*. They do not configure what tier numbers mean or how penalties are calculated.
 
@@ -499,7 +499,7 @@ This specification uses semver. Compatibility commitments:
 
 BASIS Gate v1 is a work of Vorion LLC. Comments and counter-proposals are welcome via this repository's issue tracker at `https://github.com/vorionsys/basis-gate/issues`, or by writing to the editors.
 
-The canonical trust specification referenced throughout is defined in `@vorionsys/basis` at `packages/basis/src/canonical.ts`.
+The canonical trust specification referenced throughout is [`@vorionsys/basis-spec`](https://github.com/vorionsys/basis-spec) (`packages/basis/src/canonical.ts` in that repository).
 
 ---
 

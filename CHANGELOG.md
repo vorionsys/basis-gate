@@ -8,7 +8,16 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
-Nothing yet.
+This file stops at runtime `0.1.1`, industry `0.1.1`, and spec `0.1.0`.
+`package.json` and the npm registry are ahead of it:
+
+- `@vorionsys/basis-gate-runtime@0.2.0` is on npm (17 Jun 2026). GitHub release
+  [`v0.2.0`](https://github.com/vorionsys/basis-gate/releases/tag/v0.2.0)
+  describes `verifyChain` plus signed timestamps, signed timeout events, and a
+  strict v2 verifier. Those notes are not copied into a version section below.
+- `@vorionsys/basis-gate-spec@0.1.1` and `@vorionsys/basis-gate-industry@0.1.2`
+  are on npm (19 Jun 2026). No changelog section and no newer GitHub release
+  were found for those two versions.
 
 ---
 
