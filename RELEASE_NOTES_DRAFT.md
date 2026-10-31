@@ -4,7 +4,7 @@ DRAFT — stale. Do not publish this file as current release notes.
 
 GitHub releases [`v0.1.1`](https://github.com/vorionsys/basis-gate/releases/tag/v0.1.1)
 (16 Jun 2026) and [`v0.2.0`](https://github.com/vorionsys/basis-gate/releases/tag/v0.2.0)
-(17 Jun 2026) are already published. Current npm versions, checked 30 Oct 2026,
+(17 Jun 2026) are already published. Current npm versions
 are `@vorionsys/basis-gate-spec@0.1.1`, `@vorionsys/basis-gate-industry@0.1.2`,
 and `@vorionsys/basis-gate-runtime@0.2.0`. The `v0.2.0` release notes still list
 spec `0.1.0` and industry `0.1.1`.
@@ -77,4 +77,4 @@ commitment.
 
 ## Provenance
 
-`npm view` on 30 Oct 2026 reports a SLSA provenance attestation for `@vorionsys/basis-gate-spec@0.1.1`, `@vorionsys/basis-gate-industry@0.1.2`, and `@vorionsys/basis-gate-runtime@0.2.0`. This file does not record a private source repository.
+`npm view` reports a SLSA provenance attestation for `@vorionsys/basis-gate-spec@0.1.1`, `@vorionsys/basis-gate-industry@0.1.2`, and `@vorionsys/basis-gate-runtime@0.2.0`. This file does not record a private source repository.

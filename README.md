@@ -10,7 +10,7 @@
 
 **Status:** Draft spec (`1.0-draft`) and a reference runtime that resolves a posture, runs registered layers in `block` / `inline` / `deferred` modes, and signs an Ed25519 two-stage proof chain. Five layers are implemented (identity, tier check, rate limit, proof-chain tip, audit log); other preset layer ids are skipped, the four industry profiles are draft documents (`version` `0.1.0`), and this repo has no conformance suite.  
 Published on npm: `@vorionsys/basis-gate-spec@0.1.1`, `@vorionsys/basis-gate-industry@0.1.2`, `@vorionsys/basis-gate-runtime@0.2.0` (the root package is private). GitHub releases [`v0.1.1`](https://github.com/vorionsys/basis-gate/releases/tag/v0.1.1) and [`v0.2.0`](https://github.com/vorionsys/basis-gate/releases/tag/v0.2.0) exist; the `v0.2.0` notes still list spec `0.1.0` and industry `0.1.1`.  
-Checked 30 Oct 2026: `npm test` — 66 passed, 0 failed (spec 2, industry 5, runtime 59). `npx tsx examples/minimal-governance.ts` allowed one known-agent action, denied an unknown agent, and `verifyChain` reported the chain valid. The CI badge tracks [`.github/workflows/ci.yml`](./.github/workflows/ci.yml), which builds the three packages and runs two smoke scripts. The vitest suite runs from `npm test`.
+`npm test` — 66 passed, 0 failed (spec 2, industry 5, runtime 59). `npx tsx examples/minimal-governance.ts` allowed one known-agent action, denied an unknown agent, and `verifyChain` reported the chain valid. The CI badge tracks [`.github/workflows/ci.yml`](./.github/workflows/ci.yml), which builds the three packages and runs two smoke scripts. The vitest suite runs from `npm test`.
 
 > BASIS Gate specifies how governance checks compose and how a runtime executes them. It uses tier and observation ceilings from [`@vorionsys/basis-scorer`](https://www.npmjs.com/package/@vorionsys/basis-scorer), which documents those values as derived from [`@vorionsys/basis-spec`](https://github.com/vorionsys/basis-spec). On trust-parameter questions, basis-spec is the package this runtime's dependency tree points at.
 
@@ -90,7 +90,7 @@ npm install && npm run build
 npx tsx examples/minimal-governance.ts
 ```
 
-On 30 Oct 2026 that command printed `verdict=allow` for `agent_market_scout`, `verdict=deny` from `@basis/identity` for `agent_intruder`, and `[VERIFY] chain VALID`. The printed pipeline also listed `@basis/policy-match`, `@basis/budget`, `@basis/tool-validate`, and `@basis/telemetry`, which were not executed.
+Running it printed `verdict=allow` for `agent_market_scout`, `verdict=deny` from `@basis/identity` for `agent_intruder`, and `[VERIFY] chain VALID`. The printed pipeline also listed `@basis/policy-match`, `@basis/budget`, `@basis/tool-validate`, and `@basis/telemetry`, which were not executed.
 
 ## Spec
 
@@ -105,13 +105,13 @@ The specification is [`packages/basis-gate-spec/SPEC.md`](./packages/basis-gate-
 ## Status details
 
 - Specification constant: `SPEC_VERSION = "1.0-draft"` in `packages/basis-gate-spec/src/index.ts`.
-- npm, checked 30 Oct 2026: `@vorionsys/basis-gate-spec@0.1.1`, `@vorionsys/basis-gate-industry@0.1.2`, `@vorionsys/basis-gate-runtime@0.2.0`. Those versions match each package's `package.json`.
+- npm: `@vorionsys/basis-gate-spec@0.1.1`, `@vorionsys/basis-gate-industry@0.1.2`, `@vorionsys/basis-gate-runtime@0.2.0`. Those versions match each package's `package.json`.
 - `CHANGELOG.md` stops at runtime `0.1.1`, industry `0.1.1`, and spec `0.1.0`.
 - Reference layers with factories: `@basis/identity`, `@basis/tier-check`, `@basis/rate-limit`, `@basis/proof-chain-tip`, `@basis/audit-log`.
 - Preset ids with no factory in this repo include `@basis/policy-match`, `@basis/budget`, `@basis/content-safety-in`, `@basis/content-safety-out`, `@basis/jailbreak-detect`, `@basis/pii-redact`, `@basis/tool-validate`, `@basis/human-review`, `@basis/telemetry`, `@basis/canary-sample`, `@basis/shadow-verify`, and `@basis/fingerprint-check`. The resolver can place them on the pipeline. The executor continues past a missing registry entry, including layers an industry profile lists as required. Spec § 9.3 says a conformant runtime must not silently drop required layers.
 - `action_class_rules` are stored on the built-in profiles and checked by `validateProfile`. The runtime sources do not read that field.
 - Deferred execution uses an in-process queue. It keeps jobs in memory.
-- Unit tests cover spec exports, profile loading, canonical JSON, key management, proof-chain construction, tier capping, and `verifyChain`. They do not include a conformance suite. No open issue tracks one. The open issue list on 30 Oct 2026 was [#8](https://github.com/vorionsys/basis-gate/issues/8) (proof-record format).
+- Unit tests cover spec exports, profile loading, canonical JSON, key management, proof-chain construction, tier capping, and `verifyChain`. They do not include a conformance suite. No open issue tracks one. The open issue found was [#8](https://github.com/vorionsys/basis-gate/issues/8) (proof-record format).
 - `npm test` builds, then runs vitest: 2 + 5 + 59 = 66 passed, 0 failed.
 - CI (`.github/workflows/ci.yml`) installs, builds, and runs two `node -e` smoke scripts (industry loader, one allowed `gate()` call). It does not invoke `npm test`.
 
@@ -129,6 +129,6 @@ Read [CONTRIBUTING.md](./CONTRIBUTING.md) before opening a pull request. Comment
 
 ## Related work
 
-- Canonical trust parameters are in [`@vorionsys/basis-spec`](https://github.com/vorionsys/basis-spec) at `packages/basis/src/canonical.ts` in that repository. This repo does not contain that path. The lockfile resolves `@vorionsys/basis-scorer@0.1.0` and `@vorionsys/basis-spec@1.2.0`. npm's current basis-spec version on 30 Oct 2026 was `1.3.0`. A separate package, `@vorionsys/basis@2.0.0`, points at `github.com/vorionsys/vorion` (`packages/basis`); this repo does not depend on it.
-- [aurais.net](https://www.aurais.net) (fetched 30 Oct 2026) says the Aurais product has not launched and lists five MCP bots that record signed chains. `@vorionsys/aurais-mcp-market-scout@0.5.1` depends on `@vorionsys/aurais-core`. `@vorionsys/aurais-core@0.2.1` peers `@vorionsys/basis-spec` and does not depend on `@vorionsys/basis-gate-runtime`.
-- [agentanchorai.com](https://www.agentanchorai.com) (fetched 30 Oct 2026) describes tier attestation, a sample fleet labeled Acme Inc, and agents marked pre-launch. This repository has no deployment record tying that site to this runtime.
+- Canonical trust parameters are in [`@vorionsys/basis-spec`](https://github.com/vorionsys/basis-spec) at `packages/basis/src/canonical.ts` in that repository. This repo does not contain that path. The lockfile resolves `@vorionsys/basis-scorer@0.1.0` and `@vorionsys/basis-spec@1.2.0`. The latest published `@vorionsys/basis-spec` is `1.3.0`. `@vorionsys/basis@2.0.0` is a deprecated rename of `@vorionsys/basis-spec`. This repo does not depend on it.
+- [aurais.net](https://www.aurais.net)
+- [agentanchorai.com](https://www.agentanchorai.com)

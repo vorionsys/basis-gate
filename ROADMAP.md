@@ -13,7 +13,7 @@ The reference runtime runs today for the five layers it implements.
   an in-process deferred-evidence queue, and five reference layers (identity,
   tier check, rate limit, proof-chain tip, audit log). Preset layer ids with
   no implementation are skipped at execution.
-- **Three packages published on npm** (versions checked 30 Oct 2026) —
+- **Three packages published on npm** —
   [`@vorionsys/basis-gate-spec@0.1.1`](https://www.npmjs.com/package/@vorionsys/basis-gate-spec),
   [`@vorionsys/basis-gate-industry@0.1.2`](https://www.npmjs.com/package/@vorionsys/basis-gate-industry),
   and

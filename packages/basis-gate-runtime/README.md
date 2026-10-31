@@ -7,7 +7,7 @@ A reference implementation of [BASIS Gate v1](../basis-gate-spec/SPEC.md). Resol
 - **Posture resolver.** Takes a preset, optional industry profile, and operator overrides and returns a concrete pipeline with execution modes resolved per layer per risk level.
 - **Pipeline executor.** Runs registered `block` layers serially, awaits registered `inline` layers inside `gate()` before returning, and starts registered `deferred` layers on an in-process queue. Layer ids with no registry entry are skipped, including ids a preset or industry profile marks required. Spec § 9.3 says a conformant runtime must not silently drop required layers.
 - **Two-stage proof chain.** Computes and signs a tip-commit event before action dispatch. Signs and anchors chain-extension events as deferred layers complete. Emits deferred-timeout events when a deferred layer misses its window.
-- **Reference layers.** Minimal, auditable implementations of `@basis/identity`, `@basis/tier-check`, `@basis/proof-chain-tip`, `@basis/audit-log`, and `@basis/rate-limit`. These are intended as specification illustrations and as scaffolding for production deployments, not as feature-complete production layers.
+- **Reference layers.** Minimal, auditable implementations of `@basis/identity`, `@basis/tier-check`, `@basis/proof-chain-tip`, `@basis/audit-log`, and `@basis/rate-limit`. These are intended as specification illustrations and as a starting point, not as feature-complete production layers.
 
 ## What this package does not provide
 
