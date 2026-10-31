@@ -38,7 +38,7 @@ It defines:
 
 ## Reference
 
-- Canonical trust parameters (risk levels, tier definitions, penalty formulas) are defined in the `@vorionsys/basis` package (`packages/basis/src/canonical.ts`). This specification refers to those values; it does not redefine them.
+- Canonical trust parameters (risk levels, tier definitions, penalty formulas) are defined in [`@vorionsys/basis-spec`](https://github.com/vorionsys/basis-spec) (`packages/basis/src/canonical.ts` in that repository). This repo does not vendor that path. This specification refers to those values and does not redefine them. The reference runtime reads tier helpers from `@vorionsys/basis-scorer`, which depends on `@vorionsys/basis-spec`.
 - Industry profiles ship in `@vorionsys/basis-gate-industry`.
 - Reference runtime ships in `@vorionsys/basis-gate-runtime` (separate release).
 

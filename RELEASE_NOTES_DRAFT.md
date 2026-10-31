@@ -1,43 +1,43 @@
-DRAFT — not yet published; publishing is an outward-facing step pending approval.
+DRAFT — stale. Do not publish this file as current release notes.
 
-# BASIS Gate — first GitHub Release (draft)
+# BASIS Gate — release-notes draft (outdated)
 
-These are draft notes for the first tagged GitHub Release of BASIS Gate. The
-repository currently has zero releases; the three packages already live on npm.
-This release would tag the repository state and point at those artifacts. It
-describes a **reference implementation** of the BASIS Gate specification, not a
-production-ready or certified product.
+GitHub releases [`v0.1.1`](https://github.com/vorionsys/basis-gate/releases/tag/v0.1.1)
+(16 Jun 2026) and [`v0.2.0`](https://github.com/vorionsys/basis-gate/releases/tag/v0.2.0)
+(17 Jun 2026) are already published. Current npm versions
+are `@vorionsys/basis-gate-spec@0.1.1`, `@vorionsys/basis-gate-industry@0.1.2`,
+and `@vorionsys/basis-gate-runtime@0.2.0`. The `v0.2.0` release notes still list
+spec `0.1.0` and industry `0.1.1`.
 
-> BASIS is to AI-agent governance what OAuth is to delegated authorization — an open standard so an agent trusted by one system can be evaluated by another.
+This file is a leftover draft of an earlier announcement. It describes a
+reference implementation, not a certified product.
 
 ## What this is
 
-An open specification plus a reference runtime for governance pipelines that
-mediate AI-agent actions. You compose identity, authorization, content safety,
-rate limits, policy, audit, and proof-chain signing as ordered layers, pick the
-strictness per deployment, add your own layers, and swap runtime implementations
-without rewriting agents.
+A draft specification plus one reference runtime for governance pipelines that
+mediate AI-agent actions. The specification names identity, tier check, rate
+limits, policy, content safety, audit, and proof-chain signing as ordered
+layers. This repository implements five of those layers.
 
 ## Packages
 
 Three packages version independently and are published on npm.
 
-- **[`@vorionsys/basis-gate-spec`](https://www.npmjs.com/package/@vorionsys/basis-gate-spec)** (`0.1.0`)
-  — the normative specification: the layer interface, the three execution modes
-  (block / inline / deferred), presets, the configuration grammar, the
-  two-stage proof-chain protocol, industry profiles, conformance requirements,
-  and the matching TypeScript types.
-- **[`@vorionsys/basis-gate-industry`](https://www.npmjs.com/package/@vorionsys/basis-gate-industry)** (`0.1.1`)
+- **[`@vorionsys/basis-gate-spec`](https://www.npmjs.com/package/@vorionsys/basis-gate-spec)** (`0.1.1`)
+  — the specification text and matching TypeScript types: the layer interface,
+  the three execution modes (block / inline / deferred), presets, the
+  configuration grammar, the two-stage proof-chain protocol, industry profiles,
+  and written conformance requirements. A conformance test suite is not in
+  this repository.
+- **[`@vorionsys/basis-gate-industry`](https://www.npmjs.com/package/@vorionsys/basis-gate-industry)** (`0.1.2`)
   — four built-in industry profiles (consumer-default, finance-US,
-  healthcare-HIPAA, legal-privilege) that pin specific layers to `block` in
-  regulated contexts, with their regulatory citations. Profiles are embedded as
-  build-time constants, so the loader does no runtime filesystem I/O and works
-  in serverless sandboxes.
-- **[`@vorionsys/basis-gate-runtime`](https://www.npmjs.com/package/@vorionsys/basis-gate-runtime)** (`0.1.1`)
+  healthcare-HIPAA, legal-privilege). Each embedded document is `version`
+  `0.1.0`. Profiles are TypeScript constants, so the loader does no runtime
+  filesystem I/O.
+- **[`@vorionsys/basis-gate-runtime`](https://www.npmjs.com/package/@vorionsys/basis-gate-runtime)** (`0.2.0`)
   — the reference runtime: posture resolver, block/inline/deferred executor,
-  Ed25519 signing, a deferred-evidence queue with timeout events, and 5+
-  reference layers (identity, tier check, rate limit, proof-chain tip, audit
-  log, and more).
+  Ed25519 signing, an in-process deferred queue, and five reference layers
+  (identity, tier check, rate limit, proof-chain tip, audit log).
 
 ## Two-stage proof-chain protocol
 
@@ -49,10 +49,12 @@ verification primitives so a whole chain can be replayed and tamper-checked.
 
 ## Try it
 
-A complete, runnable example lives at
-[`examples/minimal-governance.ts`](./examples/minimal-governance.ts) (starter /
-reference use). It runs one allowed action, one blocked action, and prints the
-signed proof the pipeline emits, using only the three published packages.
+A runnable example lives at
+[`examples/minimal-governance.ts`](./examples/minimal-governance.ts) (125 lines,
+starter / reference use). It runs one allowed action, one denied action, and
+checks the signed chain with `verifyChain`. It imports the published runtime
+and spec packages. The runtime depends on the industry package and on
+`@vorionsys/basis-scorer`.
 
 ```bash
 git clone https://github.com/vorionsys/basis-gate && cd basis-gate
@@ -65,7 +67,7 @@ npx tsx examples/minimal-governance.ts
 - Conformance test vectors and a validator, so an independent runtime can show
   it implements the layer contract, the execution modes, and the proof chain the
   same way the reference runtime does.
-- Tagged GitHub Releases with build provenance attestation.
+- A git tag that matches the current spec `0.1.1` and industry `0.1.2` npm versions. Releases `v0.1.1` and `v0.2.0` already exist.
 - More examples (industry-profile walkthrough, proof-chain verify-and-tamper
   walkthrough, custom-layer authoring guide).
 - Outreach to external implementers and counter-proposals on the spec.
@@ -75,4 +77,4 @@ commitment.
 
 ## Provenance
 
-Source of record: the private voriongit/vorion monorepo; npm provenance attestation links the build.
+`npm view` reports a SLSA provenance attestation for `@vorionsys/basis-gate-spec@0.1.1`, `@vorionsys/basis-gate-industry@0.1.2`, and `@vorionsys/basis-gate-runtime@0.2.0`. This file does not record a private source repository.
